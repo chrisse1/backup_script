@@ -42,7 +42,7 @@ first_start_wizard() {
         echo ")"
     } >"$CONFIG_FILE"
 
-    echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit "./backup.sh --configure" bearbeiten."
+    echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit ./backup.sh --configure bearbeiten."
 }
 
 # Prüfen, ob Konfigurationsdatei existiert
