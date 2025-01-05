@@ -12,12 +12,12 @@ first_start_wizard() {
     read -rp "Pushover-User-ID: " PUSHOVER_USER
 
     # Backup-Server
-    read -rp "Backup-Server (Standard: rsync://octopi:873/Backup): " BACKUP_SERVER
-    BACKUP_SERVER=${BACKUP_SERVER:-"rsync://octopi:873/Backup"}
+    read -rp "Backup-Server (Standard: rsync://rsyncserver:873/verzeichnis): " BACKUP_SERVER
+    BACKUP_SERVER=${BACKUP_SERVER:-"rsync://rsyncserver:873/verzeichnis"}
 
     # Backup-Pfade
     echo "Geben Sie die zu sichernden Verzeichnisse an. Format: name:path"
-    echo "Beispiel: fhem:/opt/fhem/"
+    echo "Beispiel: name:/verzeichnis/verzeichnis/"
     echo "Leere Eingabe beendet die Eingabe."
     BACKUP_PATHS=()
     while true; do
@@ -42,7 +42,7 @@ first_start_wizard() {
         echo ")"
     } >"$CONFIG_FILE"
 
-    echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell bearbeiten."
+    echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit "./backup.sh --configure" bearbeiten."
 }
 
 # Prüfen, ob Konfigurationsdatei existiert
