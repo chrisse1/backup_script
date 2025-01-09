@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Verzeichnis des Skripts ermitteln und setzen
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+
 CONFIG_FILE="backup.conf"
 
 # First-Start-Wizard
