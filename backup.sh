@@ -61,7 +61,7 @@ first_start_wizard() {
 
     # Backup-Pfade
     echo "Geben Sie die zu sichernden Verzeichnisse an. Format: name:path"
-    echo "Beispiel: name:/verzeichnis/verzeichnis/"
+    echo "Beispiel: fhem:/opt/fhem/"
     echo "Leere Eingabe beendet die Eingabe."
     BACKUP_PATHS=()
     while true; do
@@ -71,7 +71,7 @@ first_start_wizard() {
     done
 
     # Uhrzeit für den Cronjob abfragen
-    echo "Wann soll das Backup täglich ausgeführt werden? (HH:MM, 24-Stunden-Format)"
+    echo "Zu welcher Uhrzeit soll das Backup täglich ausgeführt werden? (HH:MM, 24-Stunden-Format)"
     while true; do
         read -rp "Uhrzeit: " BACKUP_TIME
         if [[ $BACKUP_TIME =~ ^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$ ]]; then
