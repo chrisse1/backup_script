@@ -19,9 +19,45 @@ first_start_wizard() {
     read -rp "Pushover-Token: " PUSHOVER_TOKEN
     read -rp "Pushover-User-ID: " PUSHOVER_USER
 
-    # Backup-Server
-    read -rp "Backup-Server (Standard: rsync://rsyncserver:873/rsync_modul): " BACKUP_SERVER
-    BACKUP_SERVER=${BACKUP_SERVER:-"rsync://rsyncserver:873/rsync_modul"}
+    # Backup-Server angeben und Verfügbarkeit prüfen
+    while true; do
+        read -rp "Backup-Server (z. B. rsyncserver): " BACKUP_SERVER
+        if [[ -z $BACKUP_SERVER ]]; then
+            echo "Backup-Server darf nicht leer sein."
+            continue
+        fi
+
+        echo "Prüfe Verfügbarkeit von '$BACKUP_SERVER' ..."
+        if rsync "$BACKUP_SERVER::" >/dev/null 2>&1; then
+            echo "Server '$BACKUP_SERVER' ist erreichbar."
+            break
+        else
+            echo "Fehler: Der Server '$BACKUP_SERVER' ist nicht erreichbar. Bitte prüfen Sie die Adresse."
+        fi
+    done
+
+    # Verfügbare rsync-Module auflisten
+    echo "Hole verfügbare rsync-Module von '$BACKUP_SERVER' ..."
+    RSYNC_MODULES=$(rsync "$BACKUP_SERVER::" 2>/dev/null | awk '{print $1}')
+    if [[ -z $RSYNC_MODULES ]]; then
+        echo "Keine rsync-Module auf dem Server gefunden. Bitte prüfen Sie die Konfiguration."
+        exit 1
+    fi
+
+    echo "Verfügbare rsync-Module:"
+    echo "$RSYNC_MODULES"
+
+    # Modul auswählen
+    while true; do
+        read -rp "Wählen Sie ein rsync-Modul aus (z. B. Backup): " RSYNC_MODULE
+        if echo "$RSYNC_MODULES" | grep -qw "$RSYNC_MODULE"; then
+            BACKUP_SERVER="$BACKUP_SERVER::$RSYNC_MODULE"
+            echo "Modul '$RSYNC_MODULE' ausgewählt."
+            break
+        else
+            echo "Ungültige Eingabe. Bitte wählen Sie ein gültiges Modul aus."
+        fi
+    done
 
     # Backup-Pfade
     echo "Geben Sie die zu sichernden Verzeichnisse an. Format: name:path"
