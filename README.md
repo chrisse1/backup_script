@@ -27,6 +27,7 @@ Dieses Bash-Skript dient zur Sicherung von Verzeichnissen auf einem Remote-Backu
 - **rsync**: Für das Kopieren von Dateien und Verzeichnissen.
 - **curl**: Für das Senden von Benachrichtigungen über Pushover.
 - **Pushover-Konto**: Zum Senden von Benachrichtigungen.
+- **rsync-Server**: Auf den die Daten gesichert werden.
 
 ---
 
