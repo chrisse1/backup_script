@@ -73,6 +73,25 @@ first_start_wizard() {
     setup_cronjob "$CRON_HOUR" "$CRON_MINUTE"
 
     echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit ./backup.sh --configure bearbeiten."
+    
+    # Abfrage: Backup direkt ausführen
+    echo "Möchten Sie direkt ein Backup ausführen? (ja/nein)"
+    while true; do
+        read -rp "Antwort: " response
+        case "$response" in
+            ja|JA|Ja|j|J)
+                echo "Starte Backup ..."
+                return 0
+                ;;
+            nein|NEIN|Ne|n|N)
+                echo "Backup wird nicht ausgeführt. Sie können es später manuell starten oder es wird automatisch durch den Cronjob ausgeführt."
+                return 1
+                ;;
+            *)
+                echo "Ungültige Eingabe. Bitte antworten Sie mit 'ja' oder 'nein'."
+                ;;
+        esac
+    done
 }
 
 # Funktion: Cronjob einrichten
