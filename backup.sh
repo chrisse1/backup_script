@@ -11,6 +11,10 @@ first_start_wizard() {
     echo "Willkommen zum First-Start-Wizard für das Backup-Skript!"
     echo "Bitte geben Sie die erforderlichen Informationen ein."
 
+    # Titel des Backups
+    read -rp "Titel des Backups (Beispiel: Server, Desktop... Standard: Server): " BACKUP_TITLE
+    BACKUP_TITLE=${BACKUP_TITLE:-"Server"}
+
     # Pushover-Token
     read -rp "Pushover-Token: " PUSHOVER_TOKEN
     read -rp "Pushover-User-ID: " PUSHOVER_USER
@@ -46,6 +50,8 @@ first_start_wizard() {
     # Konfigurationsdatei erstellen
     echo "Erstelle Konfigurationsdatei '$CONFIG_FILE' ..."
     {
+        echo "# Titel des Backups"
+        echo "BACKUP_TITLE=\"$BACKUP_TITLE\""
         echo "# Pushover-Konfiguration"
         echo "PUSHOVER_TOKEN=\"$PUSHOVER_TOKEN\""
         echo "PUSHOVER_USER=\"$PUSHOVER_USER\""
@@ -161,10 +167,10 @@ error_label=$(get_error_word $errors)
 
 # Nachrichtentitel und Sound festlegen
 if [[ $errors -eq 0 ]]; then
-    title="FHEM-Backup erfolgreich beendet"
+    title="$BACKUP_TITLE-Backup erfolgreich beendet"
     sound="cosmic"
 else
-    title="Das FHEM-Backup wurde mit $error_words $error_label beendet"
+    title="Das $BACKUP_TITLE-Backup wurde mit $error_words $error_label beendet"
     sound="falling"
 fi
 
