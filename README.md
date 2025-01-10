@@ -3,7 +3,7 @@
 Dieses Bash-Skript dient zur Sicherung von Verzeichnissen auf einem Remote-Backup-Server. Es bietet:
 - **Automatische Konfiguration** bei der ersten Ausführung.
 - **Einfache Verwaltung** der Backup-Einstellungen über einen interaktiven Konfigurationsdialog.
-  **Automatischer Skriptaufruf** durch das anlegen eines täglichen Cronjobs mit Auswahlmöglichkeit der Uhrzeit.
+- **Automatischer Skriptaufruf** durch das anlegen eines täglichen Cronjobs mit Auswahlmöglichkeit der Uhrzeit.
 - **Benachrichtigungen** über den Status des Backups mit Pushover.
 
 ---
