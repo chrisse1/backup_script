@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR" || exit 1
 
 CONFIG_FILE="backup.conf"
+SECRET_FILE="pushover_credentials.gpg"
 
 # First-Start-Wizard
 first_start_wizard() {
@@ -18,6 +19,14 @@ first_start_wizard() {
     # Pushover-Token
     read -rp "Pushover-Token: " PUSHOVER_TOKEN
     read -rp "Pushover-User-ID: " PUSHOVER_USER
+
+    # Zugangsdaten verschlüsseln und speichern
+    echo "Verschlüssele Pushover-Zugangsdaten ..."
+    echo -e "PUSHOVER_TOKEN=$PUSHOVER_TOKEN\nPUSHOVER_USER=$PUSHOVER_USER" | gpg --symmetric --cipher-algo AES256 -o "$SECRET_FILE"
+    if [[ $? -ne 0 ]]; then
+        echo "Fehler: Verschlüsselung der Pushover-Zugangsdaten fehlgeschlagen."
+        exit 1
+    fi
 
     # Backup-Server
     read -rp "Backup-Server (Standard: rsync://rsyncserver:873/verzeichnis): " BACKUP_SERVER
@@ -73,6 +82,16 @@ first_start_wizard() {
     setup_cronjob "$CRON_HOUR" "$CRON_MINUTE"
 
     echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit ./backup.sh --configure bearbeiten."
+}
+
+# Zugangsdaten entschlüsseln
+decrypt_credentials() {
+    echo "Entschlüssele Pushover-Zugangsdaten ..."
+    eval "$(gpg --quiet --decrypt "$SECRET_FILE" 2>/dev/null)"
+    if [[ $? -ne 0 ]]; then
+        echo "Fehler: Entschlüsselung der Pushover-Zugangsdaten fehlgeschlagen. Bitte prüfen Sie Ihre Eingaben."
+        exit 1
+    fi
 }
 
 # Funktion: Cronjob einrichten
