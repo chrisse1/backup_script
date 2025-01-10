@@ -20,8 +20,8 @@ first_start_wizard() {
     read -rp "Pushover-User-ID: " PUSHOVER_USER
 
     # Backup-Server
-    read -rp "Backup-Server (Standard: rsync://rsyncserver:873/verzeichnis): " BACKUP_SERVER
-    BACKUP_SERVER=${BACKUP_SERVER:-"rsync://rsyncserver:873/verzeichnis"}
+    read -rp "Backup-Server (Standard: rsync://rsyncserver:873/rsync_modul): " BACKUP_SERVER
+    BACKUP_SERVER=${BACKUP_SERVER:-"rsync://rsyncserver:873/rsync_modul"}
 
     # Backup-Pfade
     echo "Geben Sie die zu sichernden Verzeichnisse an. Format: name:path"
