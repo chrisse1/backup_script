@@ -30,6 +30,19 @@ first_start_wizard() {
         BACKUP_PATHS+=("$entry")
     done
 
+    # Uhrzeit für den Cronjob abfragen
+    echo "Wann soll das Backup täglich ausgeführt werden? (HH:MM, 24-Stunden-Format)"
+    while true; do
+        read -rp "Uhrzeit: " BACKUP_TIME
+        if [[ $BACKUP_TIME =~ ^([01]?[0-9]|2[0-3]):([0-5]?[0-9])$ ]]; then
+            CRON_HOUR=${BASH_REMATCH[1]}
+            CRON_MINUTE=${BASH_REMATCH[2]}
+            break
+        else
+            echo "Ungültiges Format. Bitte geben Sie die Uhrzeit im Format HH:MM ein."
+        fi
+    done
+
     # Konfigurationsdatei erstellen
     echo "Erstelle Konfigurationsdatei '$CONFIG_FILE' ..."
     {
@@ -44,9 +57,27 @@ first_start_wizard() {
             echo "    \"$path\""
         done
         echo ")"
+                echo
+        echo "# Cronjob-Zeit"
+        echo "BACKUP_TIME=\"$BACKUP_TIME\""
     } >"$CONFIG_FILE"
 
+    # Cronjob einrichten
+    echo "Richte Cronjob ein ..."
+    setup_cronjob "$CRON_HOUR" "$CRON_MINUTE"
+
     echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit ./backup.sh --configure bearbeiten."
+}
+
+# Funktion: Cronjob einrichten
+setup_cronjob() {
+    local hour=$1
+    local minute=$2
+    local script_path="$(realpath "$0")"
+
+    # Cronjob hinzufügen
+    (crontab -l 2>/dev/null; echo "$minute $hour * * * /bin/bash $script_path >> /var/log/backup_script.log 2>&1") | crontab -
+    echo "Cronjob erfolgreich eingerichtet: $hour:$minute Uhr täglich."
 }
 
 # Prüfen, ob Konfigurationsdatei existiert
