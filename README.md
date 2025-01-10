@@ -3,6 +3,7 @@
 Dieses Bash-Skript dient zur Sicherung von Verzeichnissen auf einem Remote-Backup-Server. Es bietet:
 - **Automatische Konfiguration** bei der ersten Ausführung.
 - **Einfache Verwaltung** der Backup-Einstellungen über einen interaktiven Konfigurationsdialog.
+  **Automatischer Skriptaufruf** durch das anlegen eines täglichen Cronjobs mit Auswahlmöglichkeit der Uhrzeit.
 - **Benachrichtigungen** über den Status des Backups mit Pushover.
 
 ---
@@ -32,4 +33,7 @@ Dieses Bash-Skript dient zur Sicherung von Verzeichnissen auf einem Remote-Backu
 ## **Installation**
 1. Klone das Repository oder lade das Skript herunter:
    git clone https://github.com/chrisse1/backup_script.git
-   cd backup-script
+2. cd backup-script
+3. chmod +x backup.sh
+4. ./backup.sh
+5. Folge den Anweisungen zur Konfiguration
