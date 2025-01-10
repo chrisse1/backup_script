@@ -75,6 +75,26 @@ first_start_wizard() {
     echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit ./backup.sh --configure bearbeiten."
 }
 
+# Funktion: Alte Backups bereinigen
+cleanup_old_backups() {
+    echo "Bereinigung von alten Dateien in '_old'-Verzeichnissen auf dem Server gestartet ..."
+    local old_dir
+
+    for entry in "${BACKUP_PATHS[@]}"; do
+        IFS=":" read -r name path <<< "$entry"
+        old_dir="$BACKUP_SERVER/${name}_old/"
+
+        # Prüfen, ob das Verzeichnis auf dem Server existiert
+        if rsync --list-only "$old_dir" >/dev/null 2>&1; then
+            # Alte Dateien (älter als 7 Tage) finden und löschen
+            rsync -av --remove-source-files --filter='-!mtime+7' "$old_dir" .
+            echo "- Alte Dateien aus $old_dir gelöscht."
+        else
+            echo "- Kein '_old'-Verzeichnis für $name auf dem Server gefunden, Bereinigung übersprungen."
+        fi
+    done
+}
+
 # Funktion: Cronjob einrichten
 setup_cronjob() {
     local hour=$1
@@ -160,6 +180,9 @@ for entry in "${BACKUP_PATHS[@]}"; do
     IFS=":" read -r name path <<< "$entry"
     backup "$name" "$path"
 done
+
+# Alte Dateien aus '_old'-Verzeichnissen auf dem Server bereinigen
+cleanup_old_backups
 
 # Fehler in Worte umwandeln
 error_words=$(number_to_words $errors)
