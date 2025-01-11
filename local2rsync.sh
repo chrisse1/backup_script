@@ -4,7 +4,7 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR" || exit 1
 
-CONFIG_FILE="backup.conf"
+CONFIG_FILE="local2rsync.conf"
 
 # First-Start-Wizard
 first_start_wizard() {
@@ -127,7 +127,7 @@ first_start_wizard() {
     echo "Richte Cronjob ein ..."
     setup_cronjob "$CRON_HOUR" "$CRON_MINUTE"
 
-    echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit ./backup.sh --configure bearbeiten."
+    echo "Konfiguration abgeschlossen. Sie können die Datei '$CONFIG_FILE' bei Bedarf manuell, oder mit ./local2rsync.sh --configure bearbeiten."
     
     # Abfrage: Backup direkt ausführen
     echo "Möchten Sie direkt ein Backup ausführen? (ja/nein)"
