@@ -59,6 +59,18 @@ first_start_wizard() {
         fi
     done
 
+    # MariaDB-Sicherung einrichten
+    echo "Möchten Sie eine MariaDB-Datenbank sichern? (ja/nein)"
+    read -rp "Antwort: " MARIADB_BACKUP
+    if [[ "$MARIADB_BACKUP" =~ ^(ja|JA|j|J)$ ]]; then
+        read -rp "MariaDB-Benutzername: " MARIADB_USER
+        read -rsp "MariaDB-Passwort: " MARIADB_PASSWORD
+        echo
+        MARIADB_BACKUP=true
+    else
+        MARIADB_BACKUP=false
+    fi
+
     # Backup-Pfade
     echo "Geben Sie die zu sichernden Verzeichnisse an. Format: name:path"
     echo "Beispiel: fhem:/opt/fhem/"
@@ -99,7 +111,14 @@ first_start_wizard() {
             echo "    \"$path\""
         done
         echo ")"
-                echo
+        echo
+        echo "# MariaDB-Backup"
+        echo "MARIADB_BACKUP=$MARIADB_BACKUP"
+        if [[ $MARIADB_BACKUP == true ]]; then
+            echo "MARIADB_USER=\"$MARIADB_USER\""
+            echo "MARIADB_PASSWORD=\"$MARIADB_PASSWORD\""
+        fi
+        echo
         echo "# Cronjob-Zeit"
         echo "BACKUP_TIME=\"$BACKUP_TIME\""
     } >"$CONFIG_FILE"
@@ -128,6 +147,41 @@ first_start_wizard() {
                 ;;
         esac
     done
+}
+
+backup_mariadb() {
+    local backup_dir="mariadb_backup"
+    mkdir -p "$backup_dir"
+
+    echo "Sichere alle MariaDB-Datenbanken ..."
+    mysqldump -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" --all-databases >"$backup_dir/all_databases.sql"
+    if [[ $? -eq 0 ]]; then
+        success_message="- Alle MariaDB-Datenbanken erfolgreich gesichert."
+        echo "$success_message"
+        messages+=("$success_message")
+    else
+        error_message="- Fehler beim Sichern der MariaDB-Datenbanken."
+        echo "$error_message"
+        messages+=("$error_message")
+        errors=$((errors + 1))
+        return
+    fi
+
+    # MariaDB-Dumps mit rsync sichern
+    rsync -av "$backup_dir/" "$BACKUP_SERVER/mariadb_backup/" >/dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        success_message="MariaDB-Dumps erfolgreich auf den Server gesichert."
+        echo "$success_message"
+        messages+=("$success_message")
+    else
+        error_message="Fehler beim Sichern der MariaDB-Dumps auf den Server."
+        echo "$error_message"
+        messages+=("$error_message")
+        errors=$((errors + 1))
+    fi
+
+    # Lokales Backup-Verzeichnis aufräumen
+    rm -rf "$backup_dir"
 }
 
 # Funktion: Cronjob einrichten
@@ -209,6 +263,11 @@ backup() {
         errors=$((errors + 1))
     fi
 }
+
+# Datenbank Backup-Logik
+if [[ $MARIADB_BACKUP == true ]]; then
+    backup_mariadb
+fi
 
 # Backups ausführen
 for entry in "${BACKUP_PATHS[@]}"; do
