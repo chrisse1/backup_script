@@ -8,7 +8,7 @@ CONFIG_FILE="backup.conf"
 
 # First-Start-Wizard
 first_start_wizard() {
-    echo "Willkommen zum First-Start-Wizard für das Backup-Skript!"
+    echo "Willkommen zum First-Start-Wizard für local2rsync!"
     echo "Bitte geben Sie die erforderlichen Informationen ein."
 
     # Titel des Backups
