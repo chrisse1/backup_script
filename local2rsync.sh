@@ -209,6 +209,9 @@ if [[ ! -f $CONFIG_FILE ]]; then
     first_start_wizard
 fi
 
+# Parameter prüfen
+check_arguments "$1"
+
 # Konfiguration einlesen
 source "$CONFIG_FILE"
 
