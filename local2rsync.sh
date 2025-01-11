@@ -6,6 +6,15 @@ cd "$SCRIPT_DIR" || exit 1
 
 CONFIG_FILE="local2rsync.conf"
 
+# Funktion: Parameter prüfen
+check_arguments() {
+    if [[ "$1" == "--configure" ]]; then
+        echo "Starte Konfigurationsdialog ..."
+        first_start_wizard
+        exit 0
+    fi
+}
+
 # First-Start-Wizard
 first_start_wizard() {
     echo "Willkommen zum First-Start-Wizard für local2rsync!"
